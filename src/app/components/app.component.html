@@ -1,0 +1,7 @@
+<h1>chat</h1>
+<button (click)="update()">update this</button>
+<div style="background-color: aqua; height: 140px; overflow: auto; display:flex; flex-direction: column-reverse">
+  <div style="background-color: aquamarine; height: 20px;" *ngFor="let comment of comments; index as i">
+    {{comment}} : content
+  </div>
+</div>
