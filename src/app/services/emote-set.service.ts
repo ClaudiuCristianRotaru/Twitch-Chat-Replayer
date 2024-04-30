@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BttvEmoteRequest, BttvEmote } from '../models/bttv-emote-request';
+import { BttvEmote } from '../models/bttv-emote-request';
 import { Observable, map, merge, take, forkJoin, mergeAll } from 'rxjs';
 import { Emote } from '../models/emote';
-import { SevenTvEmote, SevenTvEmoteRequest } from '../models/seventv-emote-request';
+import { SevenTvEmote } from '../models/seventv-emote-request';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,7 @@ export class EmoteSetService {
   }
 
   getBttvUserEmotes(userId:string): Observable<Emote[]> {
-    return this.http.get<BttvEmoteRequest>(`https://api.betterttv.net/3/cached/users/twitch/${userId}`).pipe(map(res => res.channelEmotes.concat(res.sharedEmotes).map(em => 
+    return this.http.get<{channelEmotes: BttvEmote[], sharedEmotes: BttvEmote[]}>(`https://api.betterttv.net/3/cached/users/twitch/${userId}`).pipe(map(res => res.channelEmotes.concat(res.sharedEmotes).map(em => 
       new Emote(em.code,`https://cdn.betterttv.net/emote/${em.id}/2x.webp`,em.width,em.height)
   )))
   }
@@ -33,5 +33,14 @@ export class EmoteSetService {
       res.map(em=>new Emote(em.code,`https://cdn.betterttv.net/emote/${em.id}/2x.webp`,em.width,em.height))));
   }
 
+  get7TvUserEmotes(userId:string): Observable<Emote[]> {
+    return this.http.get<{emote_set: {emotes: SevenTvEmote[]}}>(`https://7tv.io/v3/users/twitch/${userId}`).pipe(map(res=> res.emote_set.emotes.map(em =>
+        new Emote(em.name, `https://cdn.7tv.app/emote/${em.id}/2x.webp`, em.data.host.files[0].width, em.data.host.files[0].height)
+      )))
+  }
 
+  get7TvGlobalEmotes() {
+    return this.http.get<{emotes: SevenTvEmote[]}>("https://7tv.io/v3/emote-sets/global").pipe(map(res=> 
+      res.emotes.map(em=>new Emote(em.name,`https://cdn.7tv.app/emote/${em.id}/2x.webp`,em.data.host.files[0].width, em.data.host.files[0].height))));
+  }
 }

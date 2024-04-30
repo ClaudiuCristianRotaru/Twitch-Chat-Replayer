@@ -4,9 +4,3 @@ export interface BttvEmote {
     width?: number;
     height?: number;
 }
-
-export interface BttvEmoteRequest {
-    id: string;
-    channelEmotes: BttvEmote[];
-    sharedEmotes: BttvEmote[];
-}
