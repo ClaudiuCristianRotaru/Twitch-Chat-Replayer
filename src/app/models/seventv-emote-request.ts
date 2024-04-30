@@ -5,3 +5,8 @@ export interface SevenTvEmote {
     height?: number;
     data:{ host: {files:[{height: number, width: number}]}};
 }
+
+export interface SevenTvEmoteRequest {
+    id: string;
+    emote_set: {emotes: SevenTvEmote[]};
+}
