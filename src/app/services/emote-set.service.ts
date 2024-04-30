@@ -33,5 +33,9 @@ export class EmoteSetService {
       res.map(em=>new Emote(em.code,`https://cdn.betterttv.net/emote/${em.id}/2x.webp`,em.width,em.height))));
   }
 
-
+  get7TvUserEmotes(userId:string): Observable<Emote[]> {
+    return this.http.get<SevenTvEmoteRequest>(`https://7tv.io/v3/users/twitch/${userId}`).pipe(map(res=> res.emote_set.emotes.map(em =>
+        new Emote(em.name, `https://cdn.7tv.app/emote/${em.id}/2x.webp`, em.data.host.files[0].width, em.data.host.files[0].height)
+      )))
+  }
 }

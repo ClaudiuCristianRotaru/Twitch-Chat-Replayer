@@ -41,6 +41,10 @@ export class AppComponent {
       this.emoteSet = this.emoteSet.concat(r);
     });
 
-
+    this.emoteSetService.get7TvUserEmotes(this.userId).pipe(take(1)).subscribe(r=>{
+      this.emoteSet = this.emoteSet.concat(r);
+      console.log(r);
+      console.log(this.emoteSet);
+    });;
   }
 }
