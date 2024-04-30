@@ -8,4 +8,5 @@ export interface BttvEmote {
 export interface BttvEmoteRequest {
     id: string;
     channelEmotes: BttvEmote[];
+    sharedEmotes: BttvEmote[];
 }
