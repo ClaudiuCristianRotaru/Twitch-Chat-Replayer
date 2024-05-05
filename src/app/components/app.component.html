@@ -1,9 +1,9 @@
 <div class="main outline match-parent-size">
-  <h2>chat</h2>
-  <div class="chat-messages-container outline match-parent-size" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+  <h2></h2>
+  <div class="chat-messages-container outline match-parent-size" #scrollMe>
     <div class="chat-line-message" *ngFor="let comment of comments; index as i">
       <div class="chat-inline-content">
-        <span class="chat-line-message-content">author:</span>
+        <span class="chat-line-message-content"></span>
         <span class="chat-line-message-content" [innerHTML]="comment | emotify:emoteSet"></span>
       </div>
     </div>
