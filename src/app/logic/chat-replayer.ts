@@ -1,0 +1,61 @@
+import { Time } from "../logic/time";
+import { Message } from "../models/message";
+
+export class ChatReplayer {
+    position: number = 0 ;
+    startTime: Time = new Time();
+    messages: Message[] = [];
+    constructor() {
+    }
+
+    convertStringtoMessage(line: string) {
+        if (line.length == 0) return;
+
+        let splitLine: string[] = line.split(" ");
+        //line format
+        //[YYYY-MM-DD HH:MM:SS] #channel author: content
+        let date:string = splitLine[0].substring(1, "YYYY-MM-DD]".length);
+        let time:string = splitLine[1].substring(0, "HH:MM:SS".length);
+        let channel:string = splitLine[2].substring(1);
+        let author:string = splitLine[3].substring(0, splitLine[3].length - 1);
+        let content = "";
+
+        for (let i = 4; i< splitLine.length; i++) {
+            content = content + splitLine[i] + " ";
+        }
+
+        let splitTime: number[] = time.split(":").map(x => Number.parseInt(x)); 
+
+        let message = new Message(date,new Time(splitTime[0], splitTime[1], splitTime[2]),channel,author,content);
+        this.messages.push(message);
+    }
+
+    getCurrentMessageInQueue(): void { 
+        this.position = 0;
+        this.messages.forEach(message => {
+            if(message.time.compare(this.startTime) < 0) {
+                this.position++;
+            }
+        });
+    }
+
+    getTopMesssage(): string {
+        return `[${this.messages[this.position].time.toShortString()}] ${this.messages[this.position].author}: ${this.messages[this.position].content}`;
+    }
+
+    doesTimeMatch(currentTime:Time): boolean {
+        return (
+            currentTime.hours == this.messages[this.position].time.hours &&
+            currentTime.minutes == this.messages[this.position].time.minutes &&
+            currentTime.seconds == this.messages[this.position].time.seconds
+        )
+    }
+
+    replay(): void {
+        let currentTime: Time = this.startTime; 
+        while(currentTime.hours < 24) {
+            this.getTopMesssage();
+            currentTime = currentTime.add(new Time(0,0,0,20));
+        }
+    }
+}
