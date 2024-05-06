@@ -39,8 +39,12 @@ export class ChatReplayer {
         });
     }
 
-    getTopMesssage(): string {
+    getTopMessageString(): string {
         return `[${this.messages[this.position].time.toShortString()}] ${this.messages[this.position].author}: ${this.messages[this.position].content}`;
+    }
+
+    getTopMessage(): Message {
+        return this.messages[this.position];
     }
 
     doesTimeMatch(currentTime:Time): boolean {
@@ -51,11 +55,4 @@ export class ChatReplayer {
         )
     }
 
-    replay(): void {
-        let currentTime: Time = this.startTime; 
-        while(currentTime.hours < 24) {
-            this.getTopMesssage();
-            currentTime = currentTime.add(new Time(0,0,0,20));
-        }
-    }
 }
