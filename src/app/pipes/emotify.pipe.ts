@@ -23,9 +23,9 @@ export class EmotifyPipe implements PipeTransform {
     for (let word of splitMessage) {
       let selectedEmote: Emote | undefined = this.findWordInEmoteSet(word, emoteSet);
       if (selectedEmote != undefined) {
-
+        finalHTML += "</span>";
         finalHTML += this.buildReplacementSpan(selectedEmote);
-        finalHTML += "<span>"
+        finalHTML += "<span>";
       }
       else {
         finalHTML += word + " ";
