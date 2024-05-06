@@ -1,12 +1,17 @@
 <div class="main outline match-parent-size">
-  <h2></h2>
+  <span><h2>{{channel}} - {{date}}</h2></span>
+  <span>
+    <input type="checkbox" #showTime>
+    <label>Hide timestamp</label>
+  </span>
   <div class="chat-messages-container outline match-parent-size" #scrollMe>
-    <div class="chat-line-message" *ngFor="let comment of comments; index as i">
+    <div class="chat-line-message" *ngFor="let message of messages; index as i">
       <div class="chat-inline-content">
-        <span class="chat-line-message-content"></span>
-        <span class="chat-line-message-content" [innerHTML]="comment | emotify:emoteSet"></span>
+        <span *ngIf="!showTime.checked" class="chat-line-message-content time">{{message.time.toShortString()}} </span>
+        <span class="chat-line-message-content author" [ngStyle]="{'color': userColors[message.author.length % userColors.length]}">{{message.author}}: </span>
+        <span class="chat-line-message-content" [innerHTML]=" message.content| emotify:emoteSet "></span>
       </div>
     </div>
   </div>
-  <button type="button" (click)="update()">Post placeholder message</button>
+  <button type="button" (click)="placeholderClick()">Post placeholder message</button>
 </div>

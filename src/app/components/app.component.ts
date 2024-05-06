@@ -1,52 +1,69 @@
-import { Component, HostListener, ViewEncapsulation } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { EmotifyPipe } from '../pipes/emotify.pipe';
 import { EmoteSetService } from '../services/emote-set.service';
 import { take } from 'rxjs';
 import { Emote } from '../models/emote';
+import { ChatReplayer } from '../logic/chat-replayer';
+import { Message } from '../models/message';
+import { FormsModule } from '@angular/forms';
+
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, EmotifyPipe],
+  imports: [CommonModule, RouterOutlet, EmotifyPipe, FormsModule],
   providers: [EmotifyPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+
+export class AppComponent implements OnInit {
+
+  readonly userColors: string[] = ['red', 'green', 'turquoise', 'pink', 'limegreen', 'orange', 'burlywood', 'lightgray'];
+  readonly MAX_DISPLAYED_MESSAGES: number = 100;
+
+  sliderValueMinutes: number = 20;
   title = 'chat-replay-frontend';
   emoteSet: Emote[] = [];
-  comments: string[] = [];
-  i: number = 0;
-  userId: string = "96858382" 
-  constructor(private emoteSetService: EmoteSetService) { 
-    //this.emoteSet = emoteSetService.getBttvEmotes()
-    console.log('1');
-    this.getAllEmotes();
-    this.comments = ["wonkyWheel :tf: reckH Lemao puase wonkyWheel wonkyWheel LimeD Limeciety DTG puase wonkyWheel LuL ClownFi PegChamp wonkyWheel puase wonkyWheel wonkyWheel puase wonkyWheel  WonkyWheel WONKYWHEEL wonkyD","58","testi2ng KKomrade 357f7 tahhhhhh1hh2hhhhhhhhhhhh Lemao Juicers nrjkg1fn2rejgner e2wr m2ew rm2wek rew2mkr ewmrew2kl r1werfnsdafn2dsjk1vnfjwlfkbre ffe1r2er fnke1r fe2rf erf1 er1f2re ", "325", "^$363346", "646","8686"];
+  messages: Message[] = [];
+  userId: string = "96858382"
+  replayer: ChatReplayer = new ChatReplayer();
+  channel: string = "erobb221";
+  date: string = "2024/4/18";
+  constructor(private emoteSetService: EmoteSetService) { }
+
+  ngOnInit(): void {
+    console.log("ngOnInit() called.")
+    this.fetchEmoteSet();
   }
 
-  update() {
-    this.i++;
-    this.comments.splice(0,0,this.i.toString());
-    if (this.comments.length > 100 ) this.comments.splice(this.comments.length-1,1);
+  placeholderClick() {
+    console.log('update');
   }
 
-  async getAllEmotes() {
-    this.emoteSetService.getBttvUserEmotes(this.userId).pipe(take(1)).subscribe(r=>{
-      this.emoteSet = this.emoteSet.concat(r);
+  addMessage(message: Message): void {
+    //messages container direction is reversed
+    this.messages.splice(0, 0, message);
+    if (this.messages.length > this.MAX_DISPLAYED_MESSAGES) this.messages.splice(this.messages.length - 1, 1);
+  }
+
+  fetchEmoteSet(): void {
+    this.emoteSetService.getBttvUserEmotes(this.userId).pipe(take(1)).subscribe(response => {
+      this.emoteSet = this.emoteSet.concat(response);
     });
-    this.emoteSetService.getBttvGlobalEmotes().pipe(take(1)).subscribe(r=>{
-      this.emoteSet = this.emoteSet.concat(r);
+    this.emoteSetService.getBttvGlobalEmotes().pipe(take(1)).subscribe(response => {
+      this.emoteSet = this.emoteSet.concat(response);
     });
 
-    this.emoteSetService.get7TvUserEmotes(this.userId).pipe(take(1)).subscribe(r=>{
-      this.emoteSet = this.emoteSet.concat(r);
+    this.emoteSetService.get7TvUserEmotes(this.userId).pipe(take(1)).subscribe(response => {
+      this.emoteSet = this.emoteSet.concat(response);
     });;
 
-    this.emoteSetService.get7TvGlobalEmotes().pipe(take(1)).subscribe(r=>{
-      this.emoteSet = this.emoteSet.concat(r);
+    this.emoteSetService.get7TvGlobalEmotes().pipe(take(1)).subscribe(response => {
+      this.emoteSet = this.emoteSet.concat(response);
     });
   }
+
 }
