@@ -20,7 +20,6 @@
 
 .chat-line-message {
     margin-top: 2px;
-    padding-inline: 10px;
     display: table;
     flex-direction: row;
     vertical-align: middle;
@@ -46,6 +45,7 @@
 }
 
 .chat-line-message-content{
+    padding-left: 5px;
     position:inherit;
     top: 50%;
     flex: 0 1 auto;
@@ -61,8 +61,23 @@
 }
 
 .emote { 
+    margin-right: 5px;
     vertical-align: middle;
     display: inline-block;
     background-size: contain;
    
+}
+
+.time {
+    font-size: smaller;
+    color: gray;
+}
+
+.author {
+    font-weight: bold;
+}
+
+.time-slider {
+    left: 50px;
+    max-width: 80%;
 }
