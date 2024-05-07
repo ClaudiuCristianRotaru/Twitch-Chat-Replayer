@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BttvEmote } from '../models/bttv-emote-request';
 import { Observable, map, merge, take, forkJoin, mergeAll } from 'rxjs';
@@ -18,7 +18,6 @@ export class EmoteSetService {
     let bttvGlobalEmotes = this.getBttvGlobalEmotes();
     bttvGlobalEmotes.subscribe(r=> console.log(r));
     let allEmotes = merge(bttvGlobalEmotes, bttvUserEmotes);
-    console.log(2);
     return allEmotes;
   }
 
@@ -34,8 +33,13 @@ export class EmoteSetService {
   }
 
   get7TvUserEmotes(userId:string): Observable<Emote[]> {
-    return this.http.get<SevenTvEmoteRequest>(`https://7tv.io/v3/users/twitch/${userId}`).pipe(map(res=> res.emote_set.emotes.map(em =>
+    return this.http.get<{emote_set: {emotes: SevenTvEmote[]}}>(`https://7tv.io/v3/users/twitch/${userId}`).pipe(map(res=> res.emote_set.emotes.map(em =>
         new Emote(em.name, `https://cdn.7tv.app/emote/${em.id}/2x.webp`, em.data.host.files[0].width, em.data.host.files[0].height)
       )))
+  }
+
+  get7TvGlobalEmotes(): Observable<Emote[]> {
+    return this.http.get<{emotes: SevenTvEmote[]}>("https://7tv.io/v3/emote-sets/global").pipe(map(res=> 
+      res.emotes.map(em=>new Emote(em.name,`https://cdn.7tv.app/emote/${em.id}/2x.webp`,em.data.host.files[0].width, em.data.host.files[0].height))));
   }
 }
