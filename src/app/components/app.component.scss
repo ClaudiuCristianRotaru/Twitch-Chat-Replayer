@@ -68,6 +68,16 @@
    
 }
 
+.info-card {
+    padding-inline: 5px;
+}
+
+.slider-container {
+    padding-top: 20px;
+    padding-inline: 50px;
+    width: 100%;
+}
+
 .time {
     font-size: smaller;
     color: gray;
@@ -78,6 +88,11 @@
 }
 
 .time-slider {
-    left: 50px;
-    max-width: 80%;
+
+    width: 80% !important;
+}
+
+.title {
+    font-size: 30px;
+    font-weight: bolder;
 }

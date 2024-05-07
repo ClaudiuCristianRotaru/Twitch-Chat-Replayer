@@ -1,14 +1,21 @@
 <div class="main outline match-parent-size">
-  <span><h2>{{channel}} - {{date}}</h2></span>
-  <span>
+  <div class="info-card">
+    <div class="title">{{channel}} - {{date}}</div>
     <input type="checkbox" #showTime>
     <label>Hide timestamp</label>
-  </span>
+    <div class="slider-container">
+    <mat-slider class="time-slider" max="1439" step="1" discrete [displayWith]="formatSliderTimeLabel">
+      <input matSliderThumb (dragEnd)="updateCurrentTime()" (keyup)="updateCurrentTime()"
+        [(ngModel)]="sliderValueMinutes">
+    </mat-slider>
+  </div>
+  </div>
   <div class="chat-messages-container outline match-parent-size" #scrollMe>
     <div class="chat-line-message" *ngFor="let message of messages; index as i">
       <div class="chat-inline-content">
         <span *ngIf="!showTime.checked" class="chat-line-message-content time">{{message.time.toShortString()}} </span>
-        <span class="chat-line-message-content author" [ngStyle]="{'color': userColors[message.author.length % userColors.length]}">{{message.author}}: </span>
+        <span class="chat-line-message-content author"
+          [ngStyle]="{'color': userColors[message.author.length % userColors.length]}">{{message.author}}: </span>
         <span class="chat-line-message-content" [innerHTML]=" message.content| emotify:emoteSet "></span>
       </div>
     </div>
