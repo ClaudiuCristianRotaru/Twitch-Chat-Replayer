@@ -65,7 +65,7 @@
     vertical-align: middle;
     display: inline-block;
     background-size: contain;
-   
+    background-repeat: no-repeat;
 }
 
 .info-card {
@@ -100,6 +100,11 @@
 }
 
 .search {
+    width: 30px;
+    height: 30px;
+}
+
+.profile-picture {
     width: 30px;
     height: 30px;
 }
