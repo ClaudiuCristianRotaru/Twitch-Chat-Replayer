@@ -1,22 +1,21 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 import { EmotifyPipe } from '../pipes/emotify.pipe';
 import { EmoteSetService } from '../services/emote-set.service';
 import { take } from 'rxjs';
 import { Emote } from '../models/emote';
-import { ChatReplayer } from '../logic/chat-replayer';
 import { Time } from '../logic/time';
 import { Message } from '../models/message';
 import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule } from '@angular/forms';
 import { TwitchDataService } from '../services/twitch-data.service';
+import { UserData } from '../models/user-data';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, EmotifyPipe, MatSliderModule, FormsModule],
+  imports: [CommonModule, EmotifyPipe, MatSliderModule, FormsModule],
   providers: [EmotifyPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
@@ -24,50 +23,59 @@ import { TwitchDataService } from '../services/twitch-data.service';
 
 export class AppComponent implements OnInit, AfterViewChecked {
 
-  readonly userColors: string[] = ['red', 'green', 'turquoise', 'pink', 'limegreen', 'orange', 'burlywood', 'lightgray'];
+  readonly USER_COLORS: string[] = ['red', 'green', 'turquoise', 'pink', 'limegreen', 'orange', 'burlywood', 'lightgray'];
   readonly MAX_DISPLAYED_MESSAGES: number = 100;
 
-  sliderValueMinutes: number = 20;
-  timerWorker: any;
   title = 'chat-replay-frontend';
+  sliderValueMinutes: number = 20;
+  timerWorker!: Worker;
   emoteSet: Emote[] = [];
   messages: Message[] = [];
-  userId: string = "96858382"
-  replayer: ChatReplayer = new ChatReplayer();
+  userData!: UserData;
   channel: string = "erobb221";
-  date: string = "2024/4/18";
+  date: string = "2024/5/9";
 
   constructor(
-    private emoteSetService: EmoteSetService, 
-    private twitchDataService: TwitchDataService
+    private emoteSetService: EmoteSetService,
+    private twitchDataService: TwitchDataService,
   ) { }
 
   ngOnInit(): void {
     console.log("ngOnInit() called.")
+
+    if (typeof Worker !== 'undefined') this.timerWorker = new Worker(new URL('./timer.worker.ts', import.meta.url));
+
     this.scrollToBottom();
-    this.twitchDataService.getChannelLogs(this.channel, this.date).pipe(take(1)).subscribe(response => {
-      let splitRequest: string[] = response.split("\r\n");
-      if (typeof Worker !== 'undefined') {
-        console.log("Trying to init worker");
-        this.initWorker(splitRequest);
-      }
-      else {
-        console.log("Worker is not supported");
-      }
+    this.getChannelData();
+    this.initWorkerListener();
+  }
+
+  getChannelData() {
+    this.twitchDataService.getUserData(this.channel).subscribe(r => {
+      this.userData = r;
+      console.log(this.userData);
+
+      this.twitchDataService.getChannelLogs(this.channel, this.date).pipe(take(1)).subscribe({
+        next: (response) => {
+          let splitRequest: string[] = response.split("\r\n");
+          if (typeof Worker !== 'undefined')
+            this.messageWorker(splitRequest, new Time(0, 0, 0))
+        },
+        error: (e) => {
+          console.log('error');
+          this.addMessage(new Message("", new Time(), "", "SERVER", `Logs from ${this.channel} on ${this.date} are not available.`))
+        }
+
+      })
+      this.fetchEmoteSet();
     })
-    this.fetchEmoteSet();
   }
 
   ngAfterViewChecked(): void {
     this.scrollToBottom();
   }
 
-  placeholderClick() {
-    console.log('update');
-  }
-
-  initWorker(msgs: string[]) {
-    this.timerWorker = new Worker(new URL('./timer.worker.ts', import.meta.url));
+  initWorkerListener() {
     this.timerWorker.onmessage = (msg: any) => {
       if (msg.data.status == 'finished') {
         this.addMessage(new Message("", new Time(), "", "SERVER", msg.data.content));
@@ -88,14 +96,17 @@ export class AppComponent implements OnInit, AfterViewChecked {
         messageData.content);
       this.addMessage(message);
     }
-    this.timerWorker.postMessage({ messages: msgs, time: new Time(22, 59, 50) })
+  }
+
+  messageWorker(messages: any, time: any): void {
+    this.timerWorker.postMessage({ messages: messages, time: time })
   }
 
   updateCurrentTime(): void {
     let t: Time = new Time();
     t = t.convertMsToTime(this.sliderValueMinutes * 60 * 1000);
     console.log(t);
-    this.addMessage(new Message("", new Time(), "", "SERVER", `Showing messages from: ${t.toShortString()}`));
+    this.addMessage(new Message("", new Time(), "", "SERVER", `Showing messages from: ${t.toShortString()} TriHard O_o 4Weird 4Mad`));
     this.timerWorker.postMessage({ time: t })
   }
 
@@ -111,19 +122,36 @@ export class AppComponent implements OnInit, AfterViewChecked {
     if (this.messages.length > this.MAX_DISPLAYED_MESSAGES) this.messages.splice(this.messages.length - 1, 1);
   }
 
+  getNewChannelData() {
+    console.log(this.channel);
+    console.log(this.date);
+    this.messages = [];
+    this.getChannelData();
+  }
+
   fetchEmoteSet(): void {
-    this.emoteSetService.getBttvUserEmotes(this.userId).pipe(take(1)).subscribe(response => {
+    this.emoteSet = [];
+    this.emoteSetService.getBttvUserEmotes(this.userData.twitch_id).pipe(take(1)).subscribe(response => {
       this.emoteSet = this.emoteSet.concat(response);
     });
     this.emoteSetService.getBttvGlobalEmotes().pipe(take(1)).subscribe(response => {
       this.emoteSet = this.emoteSet.concat(response);
     });
 
-    this.emoteSetService.get7TvUserEmotes(this.userId).pipe(take(1)).subscribe(response => {
+    this.emoteSetService.get7TvUserEmotes(this.userData.twitch_id).pipe(take(1)).subscribe(response => {
       this.emoteSet = this.emoteSet.concat(response);
     });;
 
     this.emoteSetService.get7TvGlobalEmotes().pipe(take(1)).subscribe(response => {
+      this.emoteSet = this.emoteSet.concat(response);
+    });
+
+    this.emoteSetService.getTwitchGlobalEmotes().pipe(take(1)).subscribe(response => {
+      this.emoteSet = this.emoteSet.concat(response);
+    });
+
+    this.emoteSetService.getTwitchUserEmotes(this.userData.twitch_id).pipe(take(1)).subscribe(response => {
+      console.log(response);
       this.emoteSet = this.emoteSet.concat(response);
     });
   }
