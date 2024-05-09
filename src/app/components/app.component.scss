@@ -20,7 +20,6 @@
 
 .chat-line-message {
     margin-top: 2px;
-    padding-inline: 10px;
     display: table;
     flex-direction: row;
     vertical-align: middle;
@@ -46,6 +45,7 @@
 }
 
 .chat-line-message-content{
+    padding-left: 5px;
     position:inherit;
     top: 50%;
     flex: 0 1 auto;
@@ -61,8 +61,50 @@
 }
 
 .emote { 
+    margin-right: 5px;
     vertical-align: middle;
     display: inline-block;
     background-size: contain;
-   
+    background-repeat: no-repeat;
+}
+
+.info-card {
+    padding-inline: 5px;
+}
+
+.slider-container {
+    padding-top: 20px;
+    padding-inline: 50px;
+}
+
+.time {
+    font-size: smaller;
+    color: gray;
+}
+
+.author {
+    font-weight: bold;
+}
+
+.time-slider {
+
+    width: 90% !important;
+}
+
+.title {
+    background-color: rgb(14, 14, 16);
+    color: rgb(239, 239, 241);
+    width: 20%;
+    font-size: 30px;
+    font-weight: bolder;
+}
+
+.search {
+    width: 30px;
+    height: 30px;
+}
+
+.profile-picture {
+    width: 30px;
+    height: 30px;
 }
