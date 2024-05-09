@@ -51,7 +51,8 @@ export class ChatReplayer {
         return (
             currentTime.hours == this.messages[this.position].time.hours &&
             currentTime.minutes == this.messages[this.position].time.minutes &&
-            currentTime.seconds == this.messages[this.position].time.seconds
+            currentTime.seconds == this.messages[this.position].time.seconds &&
+            currentTime.milliseconds == this.messages[this.position].time.milliseconds
         )
     }
 
