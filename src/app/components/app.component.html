@@ -1,6 +1,7 @@
 <div class="main outline match-parent-size">
   <div class="info-card">
     <!-- <div class="title">{{channel}} - {{date}}</div> -->
+    <img class="profile-picture" [src]="userData.avatar"/>
     <input class="title" type="text" [(ngModel)]="channel">
     <input class="title" type="text" [(ngModel)]="date">
     <input class="search" (click)="getNewChannelData()" type="button">
@@ -23,5 +24,4 @@
       </div>
     </div>
   </div>
-  <button type="button" (click)="placeholderClick()">Post placeholder message</button>
 </div>
