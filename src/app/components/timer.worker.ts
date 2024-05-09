@@ -11,6 +11,7 @@ addEventListener('message', (e) => {
     console.log(e);
 
     if (e.data.messages) {
+        replayer.messages = [];
         console.log("Setting worker messages");
         e.data.messages.forEach((message: string) =>
             replayer.convertStringtoMessage(message));
@@ -20,31 +21,34 @@ addEventListener('message', (e) => {
         console.log("Setting worker current time");
         setTime(e.data.time);
     }
-
+    console.log(inter);
     if (!inter) {
         console.log("Starting new worker interval");
-        inter = setInterval(ping, 20);
+        inter = setInterval(ping, 1000);
     }
 });
 
 function ping() {
-    currentTime = currentTime.add(new Time(0, 0, 0, 20));
-
-    if (!replayer.doesTimeMatch(currentTime)) return;
-
+    while (replayer.doesTimeMatch(currentTime))
+    {
     postMessage({status: "inprogress", content: replayer.getTopMessage()});
     replayer.position++;
+    checkQueueEnd();
+    }
+    currentTime = currentTime.add(new Time(0, 0, 0, 1000));
+}
+
+function setTime(time: any) {
+    currentTime = new Time(time.hours, time.minutes, time.seconds, time.milliseconds);
+    replayer.startTime = currentTime;
+    replayer.getCurrentMessageInQueue();
+    checkQueueEnd();
+}
+
+function checkQueueEnd() {
     if (replayer.position == replayer.messages.length) {
 
         postMessage({status: "finished", content: `End of today's chat logs`});
         replayer.position = 0;
     }
-
-}
-
-function setTime(time: any) {
-    currentTime = new Time(time.hours, time.minutes, time.seconds, time.milliseconds);
-    console.log(currentTime);
-    replayer.startTime = currentTime;
-    replayer.getCurrentMessageInQueue();
 }
