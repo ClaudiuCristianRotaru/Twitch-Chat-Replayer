@@ -4,8 +4,9 @@ import { Time } from "../logic/time";
 
 let currentTime: Time = new Time();
 let replayer: ChatReplayer = new ChatReplayer();
-let inter: any;
-
+let repeatingInterval: any;
+let ms: number = 1000;
+let expected = Date.now();
 addEventListener('message', (e) => {
     console.log("Initialized worker with data:");
     console.log(e);
@@ -21,14 +22,18 @@ addEventListener('message', (e) => {
         console.log("Setting worker current time");
         setTime(e.data.time);
     }
-    console.log(inter);
-    if (!inter) {
+    console.log(repeatingInterval);
+    if (!repeatingInterval) {
         console.log("Starting new worker interval");
-        inter = setInterval(ping, 1000);
+        repeatingInterval = setTimeout(tick, ms);
     }
 });
 
-function ping() {
+function tick() {
+    let dt = Date.now() - expected;
+    if( dt > ms) {
+        console.error("Time is desyncing")
+    }
     while (replayer.doesTimeMatch(currentTime))
     {
     postMessage({status: "inprogress", content: replayer.getTopMessage()});
@@ -36,6 +41,8 @@ function ping() {
     checkQueueEnd();
     }
     currentTime = currentTime.add(new Time(0, 0, 0, 1000));
+    expected += ms;
+    setTimeout(tick,Math.max(0,ms-dt));
 }
 
 function setTime(time: any) {
