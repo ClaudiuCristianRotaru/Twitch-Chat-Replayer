@@ -4,35 +4,31 @@ import { Time } from "../logic/time";
 
 let currentTime: Time = new Time();
 let replayer: ChatReplayer = new ChatReplayer();
-let repeatingInterval: any;
+let isLoopActive: boolean = false;
 let ms: number = 1000;
 let expected = Date.now();
 addEventListener('message', (e) => {
-    console.log("Initialized worker with data:");
-    console.log(e);
 
     if (e.data.messages) {
         replayer.messages = [];
-        console.log("Setting worker messages");
         e.data.messages.forEach((message: string) =>
             replayer.convertStringtoMessage(message));
     }
 
     if (e.data.time) {
-        console.log("Setting worker current time");
         setTime(e.data.time);
     }
-    console.log(repeatingInterval);
-    if (!repeatingInterval) {
-        console.log("Starting new worker interval");
-        repeatingInterval = setTimeout(tick, ms);
+
+    if (!isLoopActive) {
+        isLoopActive = true;
+        setTimeout(tick, ms);
     }
 });
 
 function tick() {
     let dt = Date.now() - expected;
     if( dt > ms) {
-        console.error("Time is desyncing")
+        console.error("Time might be desyncing")
     }
     while (replayer.doesTimeMatch(currentTime))
     {
