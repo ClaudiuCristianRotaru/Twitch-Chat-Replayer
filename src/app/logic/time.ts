@@ -11,14 +11,14 @@ export class Time {
     }
 
     add(newTime: Time): Time {
-        return this.convertMsToTime(newTime.convertTimeToMs() + this.convertTimeToMs());
+        return Time.convertMsToTime(newTime.convertTimeToMs() + this.convertTimeToMs());
     }
 
     convertTimeToMs(): number {
         return this.milliseconds + this.seconds * 1000 + this.minutes * 60 * 1000 + this.hours * 60 * 60 * 1000;
     }
 
-    convertMsToTime(ms:number): Time {
+    static convertMsToTime(ms:number): Time {
         return new Time(
         Math.floor((ms / (1000 * 60 * 60))),
         Math.floor((ms / (1000 * 60)) % 60),
