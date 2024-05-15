@@ -43,7 +43,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     console.log("ngOnInit() called.")
-    console.log(Date.now());
+    let todayDate = new Date(Date.now());
+    this.date = `${todayDate.getUTCFullYear()}/${todayDate.getUTCMonth()+1}/${todayDate.getUTCDate()}`
     if (typeof Worker !== 'undefined') this.timerWorker = new Worker(new URL('./timer.worker.ts', import.meta.url));
 
     this.scrollToBottom();
@@ -55,8 +56,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
     this.twitchDataService.getUserData(this.channel).subscribe({
       next: dataResponse => {
         this.userData = dataResponse;
-        console.log(this.userData);
-
         this.twitchDataService.getChannelLogs(this.channel, this.date).pipe(take(1)).subscribe({
           next: (response) => {
             let splitRequest: string[] = response.split("\r\n");
@@ -67,7 +66,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         })
         this.fetchEmoteSet();
       },
-      error: (e) => this.addErrorMessage(`Could not retrieve data about ${this.channel}`,e)
+      error: (e) => this.addErrorMessage(`Could not retrieve data about ${this.channel}`, e)
     })
   }
 
@@ -104,15 +103,14 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
   updateCurrentTime(): void {
     let t: Time = new Time();
-    t = t.convertMsToTime(this.sliderValueMinutes * 60 * 1000);
-    console.log(t);
+    t = Time.convertMsToTime(this.sliderValueMinutes * 60 * 1000);
     this.addMessage(new Message("", new Time(), "", "SERVER", `Showing messages from: ${t.toShortString()}`));
     this.timerWorker.postMessage({ time: t })
   }
 
   formatSliderTimeLabel(value: number): string {
     let t = new Time();
-    t = t.convertMsToTime(value * 60 * 1000);
+    t = Time.convertMsToTime(value * 60 * 1000);
     return t.toShortString();
   }
 
@@ -137,6 +135,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
     let audio = new Audio();
     audio.src = "../../../assets/pop.mp3";
     audio.load();
+    audio.volume = 0.2;
     audio.play();
   }
 
