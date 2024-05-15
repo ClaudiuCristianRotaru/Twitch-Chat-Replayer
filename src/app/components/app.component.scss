@@ -69,6 +69,7 @@
 }
 
 .info-card {
+    padding-top: 5px;
     padding-inline: 5px;
 }
 
@@ -95,16 +96,17 @@
     background-color: rgb(14, 14, 16);
     color: rgb(239, 239, 241);
     width: 20%;
-    font-size: 30px;
+    font-size: 25px;
     font-weight: bolder;
 }
 
-.search {
+.search-button {
     width: 30px;
     height: 30px;
 }
 
 .profile-picture {
+    object-fit: cover;
     width: 30px;
     height: 30px;
 }

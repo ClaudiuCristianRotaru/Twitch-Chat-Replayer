@@ -38,6 +38,8 @@ yarn-error.log
 testem.log
 /typings
 config.ts
+run.bat
+run.vbs
 
 # System files
 .DS_Store

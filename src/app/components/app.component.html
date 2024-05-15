@@ -1,13 +1,13 @@
 <div class="main outline match-parent-size">
   <div class="info-card">
-    <!-- <div class="title">{{channel}} - {{date}}</div> -->
-    <img class="profile-picture" [src]="userData.avatar"/>
+    <img class="profile-picture" [src]="userData?.avatar"/>
     <input class="title" type="text" [(ngModel)]="channel">
     <input class="title" type="text" [(ngModel)]="date">
-    <input class="search" (click)="getNewChannelData()" type="button">
-    <input type="checkbox" #showTime>
+    <input class="search-button" (click)="getNewChannelData()" [innerText]="channel" type="button">
+    <input type="checkbox" (click)="reloadDataSet()" #showTime>
     <label>Hide timestamp</label>
-
+    <input type="checkbox" [checked]="isAudioEnabled" (change)="isAudioEnabled = !isAudioEnabled">
+    <label>Play message sound</label>
     <mat-slider class="time-slider" max="1439" step="1" discrete [displayWith]="formatSliderTimeLabel">
       <input matSliderThumb (dragEnd)="updateCurrentTime()" (keyup)="updateCurrentTime()"
         [(ngModel)]="sliderValueMinutes">
