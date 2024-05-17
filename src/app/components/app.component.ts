@@ -28,13 +28,13 @@ export class AppComponent implements OnInit, AfterViewChecked {
   readonly MAX_DISPLAYED_MESSAGES: number = 100;
 
   title = 'chat-replay-frontend';
-  sliderValueMinutes: number = 20;
+  sliderValueMinutes: number = 0;
   timerWorker!: Worker;
   emoteSet: Emote[] = [];
   messages: Message[] = [];
   userData!: UserData;
   channel: string = "erobb221";
-  date: string = "2024/5/9";
+  date: string = "2024/1/1";
   isAudioEnabled: boolean = false;
   constructor(
     private emoteSetService: EmoteSetService,
@@ -42,9 +42,9 @@ export class AppComponent implements OnInit, AfterViewChecked {
   ) { }
 
   ngOnInit(): void {
-    console.log("ngOnInit() called.")
+    console.log("ngOnInit() called.");
     let todayDate = new Date(Date.now());
-    this.date = `${todayDate.getUTCFullYear()}/${todayDate.getUTCMonth()+1}/${todayDate.getUTCDate()}`
+    this.date = `${todayDate.getUTCFullYear()}/${todayDate.getUTCMonth()+1}/${todayDate.getUTCDate()}`;
     if (typeof Worker !== 'undefined') this.timerWorker = new Worker(new URL('./timer.worker.ts', import.meta.url));
 
     this.scrollToBottom();
@@ -105,7 +105,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
     let t: Time = new Time();
     t = Time.convertMsToTime(this.sliderValueMinutes * 60 * 1000);
     this.addMessage(new Message("", new Time(), "", "SERVER", `Showing messages from: ${t.toShortString()}`));
-    this.timerWorker.postMessage({ time: t })
+    this.timerWorker.postMessage({ time: t });
   }
 
   formatSliderTimeLabel(value: number): string {
@@ -163,6 +163,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
   scrollToBottom(): void {
     try {
+      //disable autoscroll if scrolled up
+      if (this.myScrollContainer.nativeElement.scrollTop < 0) return;
       this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
     } catch (err) { }
   }
