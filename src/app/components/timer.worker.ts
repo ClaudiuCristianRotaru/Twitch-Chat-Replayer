@@ -16,6 +16,7 @@ addEventListener('message', (e) => {
     }
 
     if (e.data.time) {
+        expected = Date.now();
         setTime(e.data.time);
     }
 
@@ -27,18 +28,18 @@ addEventListener('message', (e) => {
 
 function tick() {
     let dt = Date.now() - expected;
-    if( dt > ms) {
-        console.error("Time might be desyncing")
+    if (dt > ms) {
+        console.error("Time might be desyncing");
     }
-    while (replayer.doesTimeMatch(currentTime))
-    {
-    postMessage({status: "inprogress", content: replayer.getTopMessage()});
-    replayer.position++;
-    checkQueueEnd();
+    while (replayer.doesTimeMatch(currentTime)) {
+        postMessage({ status: "inprogress", content: replayer.getTopMessage() });
+        replayer.position++;
+        checkQueueEnd();
     }
     currentTime = currentTime.add(new Time(0, 0, 0, 1000));
     expected += ms;
-    setTimeout(tick,Math.max(0,ms-dt));
+    if (!isLoopActive) return; 
+    setTimeout(tick, Math.max(0, ms - dt));
 }
 
 function setTime(time: any) {
@@ -50,8 +51,8 @@ function setTime(time: any) {
 
 function checkQueueEnd() {
     if (replayer.position == replayer.messages.length) {
-
-        postMessage({status: "finished", content: `End of today's chat logs`});
+        isLoopActive = false;
+        postMessage({ status: "finished", content: `End of today's chat logs` });
         replayer.position = 0;
     }
 }
