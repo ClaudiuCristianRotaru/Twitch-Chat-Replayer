@@ -9,6 +9,10 @@
     
 }
 
+.server-message {
+    color: burlywood;
+}
+
 .chat-messages-container {
     vertical-align: middle;
     flex: 1 1 auto;
@@ -93,14 +97,17 @@
 }
 
 .title {
-    background-color: rgb(14, 14, 16);
-    color: rgb(239, 239, 241);
-    width: 20%;
-    font-size: 25px;
-    font-weight: bolder;
+}
+
+.title-container {
+    height: 20px !important;
+    color: white;
+    background-color: rgb(14, 14, 16) !important;
 }
 
 .search-button {
+    background-color: rgb(24, 24, 27) !important;
+    color: rgb(239, 239, 241) !important;
     width: 30px;
     height: 30px;
 }
