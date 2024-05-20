@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { CLIENT_ID, CLIENT_SECRET } from '../config'
 import { UserData } from '../models/user-data';
-import { response } from 'express';
 
 @Injectable({
   providedIn: 'root'

@@ -2,11 +2,13 @@
 import { ChatReplayer } from "../logic/chat-replayer";
 import { Time } from "../logic/time";
 
+
+const replayer: ChatReplayer = new ChatReplayer();
+const ms: number = 1000;
 let currentTime: Time = new Time();
-let replayer: ChatReplayer = new ChatReplayer();
 let isLoopActive: boolean = false;
-let ms: number = 1000;
 let expected = Date.now();
+
 addEventListener('message', (e) => {
 
     if (e.data.messages) {
@@ -27,7 +29,7 @@ addEventListener('message', (e) => {
 });
 
 function tick() {
-    let dt = Date.now() - expected;
+    const dt = Date.now() - expected;
     if (dt > ms) {
         console.error("Time might be desyncing");
     }
@@ -42,7 +44,7 @@ function tick() {
     setTimeout(tick, Math.max(0, ms - dt));
 }
 
-function setTime(time: any) {
+function setTime(time: {hours: number, minutes:number, seconds:number, milliseconds:number}) {
     currentTime = new Time(time.hours, time.minutes, time.seconds, time.milliseconds);
     replayer.startTime = currentTime;
     replayer.getCurrentMessageInQueue();

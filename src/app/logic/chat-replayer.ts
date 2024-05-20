@@ -11,22 +11,22 @@ export class ChatReplayer {
     convertStringtoMessage(line: string) {
         if (line.length == 0) return;
 
-        let splitLine: string[] = line.split(" ");
+        const splitLine: string[] = line.split(" ");
         //line format
         //[YYYY-MM-DD HH:MM:SS] #channel author: content
-        let date:string = splitLine[0].substring(1, "YYYY-MM-DD]".length);
-        let time:string = splitLine[1].substring(0, "HH:MM:SS".length);
-        let channel:string = splitLine[2].substring(1);
-        let author:string = splitLine[3].substring(0, splitLine[3].length - 1);
-        let content = "";
+        const date:string = splitLine[0].substring(1, "YYYY-MM-DD]".length);
+        const time:string = splitLine[1].substring(0, "HH:MM:SS".length);
+        const channel:string = splitLine[2].substring(1);
+        const author:string = splitLine[3].substring(0, splitLine[3].length - 1);
+        let content:string = "";
 
         for (let i = 4; i< splitLine.length; i++) {
             content = content + splitLine[i] + " ";
         }
 
-        let splitTime: number[] = time.split(":").map(x => Number.parseInt(x)); 
+        const splitTime: number[] = time.split(":").map(x => Number.parseInt(x)); 
 
-        let message = new Message(date,new Time(splitTime[0], splitTime[1], splitTime[2]),channel,author,content);
+        const message = new Message(date,new Time(splitTime[0], splitTime[1], splitTime[2]),channel,author,content);
         this.messages.push(message);
     }
 

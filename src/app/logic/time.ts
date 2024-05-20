@@ -29,8 +29,7 @@ export class Time {
 
     compare(newTime:Time ): number {
         if (this.convertTimeToMs() == newTime.convertTimeToMs()) return 0
-        let returnVal = this.convertTimeToMs() < newTime.convertTimeToMs()? -1 : 1;
-        return returnVal;
+        return this.convertTimeToMs() < newTime.convertTimeToMs()? -1 : 1;
     }
 
     toString(): string { 

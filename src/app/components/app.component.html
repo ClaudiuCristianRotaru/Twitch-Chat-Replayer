@@ -1,7 +1,7 @@
 <div class="main outline match-parent-size">
   <div class="info-card">
     <form>
-      <img class="profile-picture" [src]="userData?.avatar"/>
+      <img alt="Twitch avatar" class="profile-picture" [src]="userData?.avatar"/>
 
       <mat-form-field class="title-field">
         <mat-label>Channel</mat-label>
@@ -14,11 +14,13 @@
       </mat-form-field>
 
       <button mat-stroked-button class="search-button" (click)="getNewChannelData()">Search</button>
+
+      <input id="hide-timestamp" type="checkbox" (click)="reloadDataSet()" #showTime>
+      <label for="hide-timestamp">Hide timestamp</label>
+      <input id="play-audio" type="checkbox" [checked]="isAudioEnabled" (change)="isAudioEnabled = !isAudioEnabled">
+      <label for="play-audio">Play message sound</label>
     </form>
-    <input type="checkbox" (click)="reloadDataSet()" #showTime>
-    <label>Hide timestamp</label>
-    <input type="checkbox" [checked]="isAudioEnabled" (change)="isAudioEnabled = !isAudioEnabled">
-    <label>Play message sound</label>
+
     <mat-slider class="time-slider" max="1439" step="1" discrete [displayWith]="formatSliderTimeLabel">
       <input matSliderThumb (dragEnd)="updateCurrentTime()" (keyup)="updateCurrentTime()"
         [(ngModel)]="sliderValueMinutes">
@@ -27,7 +29,7 @@
   </div>
   <div class="chat-messages-container outline match-parent-size" #scrollMe>
     <div class="chat-line-message" *ngFor="let message of messages; index as i">
-      <div [ngClass]="{'server-message': message.author == 'SERVER'}" class="chat-inline-content">
+      <div [ngClass]="{'server-message': message.author === 'SERVER'}" class="chat-inline-content">
         <span *ngIf="!showTime.checked" class="chat-line-message-content time">{{message.time.toShortString()}} </span>
         <span class="chat-line-message-content author"
           [ngStyle]="{'color': USER_COLORS[message.author.length % USER_COLORS.length]}">{{message.author}}: </span>

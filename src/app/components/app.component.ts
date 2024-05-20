@@ -12,12 +12,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { TwitchDataService } from '../services/twitch-data.service';
 import { UserData } from '../models/user-data';
-
+import { MatButtonModule } from '@angular/material/button';
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, EmotifyPipe, MatSliderModule, MatInputModule, MatFormFieldModule, FormsModule],
+  imports: [CommonModule, EmotifyPipe, MatSliderModule, MatInputModule, MatFormFieldModule, FormsModule, MatButtonModule],
   providers: [EmotifyPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
   emoteSet: Emote[] = [];
   messages: Message[] = [];
   userData!: UserData;
-  channel: string = "erobb221";
+  channel: string = "velcuz";
   date: string = "2024/1/1";
   isAudioEnabled: boolean = false;
   constructor(
@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     console.log("ngOnInit() called.");
-    let todayDate = new Date(Date.now());
+    const todayDate = new Date(Date.now());
     this.date = `${todayDate.getUTCFullYear()}/${todayDate.getUTCMonth()+1}/${todayDate.getUTCDate()}`;
     if (typeof Worker !== 'undefined') this.timerWorker = new Worker(new URL('./timer.worker.ts', import.meta.url));
 
@@ -58,7 +58,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         this.userData = dataResponse;
         this.twitchDataService.getChannelLogs(this.channel, this.date).pipe(take(1)).subscribe({
           next: (response) => {
-            let splitRequest: string[] = response.split("\r\n");
+            const splitRequest: string[] = response.split("\r\n");
             if (typeof Worker !== 'undefined')
               this.messageWorker(splitRequest, new Time(0, 0, 0))
           },
@@ -80,14 +80,14 @@ export class AppComponent implements OnInit, AfterViewChecked {
         this.addMessage(new Message("", new Time(), "", "SERVER", msg.data.content));
         return;
       }
-      let messageData = msg.data.content;
-      let messageTime: Time = new Time(
+      const messageData = msg.data.content;
+      const messageTime: Time = new Time(
         messageData.time.hours,
         messageData.time.minutes,
         messageData.time.seconds,
         messageData.time.milliseconds);
       this.sliderValueMinutes = messageTime.hours * 60 + messageTime.minutes;
-      let message: Message = new Message(
+      const message: Message = new Message(
         messageData.date,
         messageTime,
         messageData.channel,
@@ -132,7 +132,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
   }
 
   playMessageSfx() {
-    let audio = new Audio();
+    const audio = new Audio();
     audio.src = "../../../assets/pop.mp3";
     audio.load();
     audio.volume = 0.2;
@@ -141,16 +141,16 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
   fetchEmoteSet(): void {
     this.emoteSet = [];
-    let x: { emoteSetName: string, emoteRequest: Observable<Emote[]> }[] = [];
+    const emoteSetRequests: { emoteSetName: string, emoteRequest: Observable<Emote[]> }[] = [];
 
-    x.push({ emoteSetName: "BTTV global", emoteRequest: this.emoteSetService.getBttvGlobalEmotes() });
-    x.push({ emoteSetName: "7TV global", emoteRequest: this.emoteSetService.get7TvGlobalEmotes() });
-    x.push({ emoteSetName: "Twitch global", emoteRequest: this.emoteSetService.getTwitchGlobalEmotes() });
-    x.push({ emoteSetName: "BTTV user", emoteRequest: this.emoteSetService.getBttvUserEmotes(this.userData.twitch_id) });
-    x.push({ emoteSetName: "7TV user", emoteRequest: this.emoteSetService.get7TvUserEmotes(this.userData.twitch_id) });
-    x.push({ emoteSetName: "Twitch user", emoteRequest: this.emoteSetService.getTwitchUserEmotes(this.userData.twitch_id) });
+    emoteSetRequests.push({ emoteSetName: "BTTV global", emoteRequest: this.emoteSetService.getBttvGlobalEmotes() });
+    emoteSetRequests.push({ emoteSetName: "7TV global", emoteRequest: this.emoteSetService.get7TvGlobalEmotes() });
+    emoteSetRequests.push({ emoteSetName: "Twitch global", emoteRequest: this.emoteSetService.getTwitchGlobalEmotes() });
+    emoteSetRequests.push({ emoteSetName: "BTTV user", emoteRequest: this.emoteSetService.getBttvUserEmotes(this.userData.twitch_id) });
+    emoteSetRequests.push({ emoteSetName: "7TV user", emoteRequest: this.emoteSetService.get7TvUserEmotes(this.userData.twitch_id) });
+    emoteSetRequests.push({ emoteSetName: "Twitch user", emoteRequest: this.emoteSetService.getTwitchUserEmotes(this.userData.twitch_id) });
 
-    x.forEach(r => r.emoteRequest.pipe(take(1)).subscribe({
+    emoteSetRequests.forEach(r => r.emoteRequest.pipe(take(1)).subscribe({
       next: (response) => this.emoteSet = this.emoteSet.concat(response),
       error: (e) => this.addErrorMessage(`${this.channel}'s "${r.emoteSetName}" emote set couldn't be fetched`, e),
     }));
@@ -166,6 +166,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
       //disable autoscroll if scrolled up
       if (this.myScrollContainer.nativeElement.scrollTop < 0) return;
       this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-    } catch (err) { }
+    } catch (err) { console.error(err); }
   }
 }

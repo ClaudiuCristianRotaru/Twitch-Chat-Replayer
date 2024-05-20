@@ -19,9 +19,9 @@ export class EmotifyPipe implements PipeTransform {
       return message;
 
     let finalHTML: string = '<span>';
-    let splitMessage: string[] = message.split(" ");
-    for (let word of splitMessage) {
-      let selectedEmote: Emote | undefined = this.findWordInEmoteSet(word, emoteSet);
+    const splitMessage: string[] = message.split(" ");
+    for (const word of splitMessage) {
+      const selectedEmote: Emote | undefined = this.findWordInEmoteSet(word, emoteSet);
       if (selectedEmote != undefined) {
         finalHTML += "</span>";
         finalHTML += this.buildReplacementSpan(selectedEmote);
@@ -48,14 +48,14 @@ export class EmotifyPipe implements PipeTransform {
 
   private buildReplacementSpan(selectedEmote:Emote): string {
     let replacementSpan: string=""
-    let classAttribute: string = `emote`;
-    let height: any = 32;
-    let width: any = 32;
+    const classAttribute: string = `emote`;
+    let height: number = 32;
+    let width: number = 32;
     
     if (selectedEmote.height) height = selectedEmote.height;
     if (selectedEmote.width) width = selectedEmote.width;
 
-    let styleAttribute: string = `"height:32px; aspect-ratio:${width}/${height}; background-image:url(${selectedEmote.url});"`
+    const styleAttribute: string = `"height:32px; aspect-ratio:${width}/${height}; background-image:url(${selectedEmote.url});"`
     replacementSpan += `<span style=${styleAttribute} class="${classAttribute}"></span>`
 
     return replacementSpan;

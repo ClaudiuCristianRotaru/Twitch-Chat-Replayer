@@ -1,7 +1,7 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BttvEmote } from '../models/bttv-emote';
-import { Observable, map, merge, take, forkJoin, mergeAll, BehaviorSubject, switchMap } from 'rxjs';
+import { Observable, map, take, switchMap } from 'rxjs';
 import { Emote } from '../models/emote';
 import { SevenTvEmote } from '../models/seventv-emote';
 import { TwitchDataService } from './twitch-data.service';
@@ -13,15 +13,6 @@ import { TwitchEmote } from '../models/twitch-emote';
 export class EmoteSetService {
 
   constructor(private http: HttpClient, private twitchDataService: TwitchDataService) { }
-
-  getAllEmotes(userId: string): Observable<Emote[]> {
-    let bttvUserEmotes = this.getBttvUserEmotes(userId);
-    bttvUserEmotes.subscribe(r => console.log(r));
-    let bttvGlobalEmotes = this.getBttvGlobalEmotes();
-    bttvGlobalEmotes.subscribe(r => console.log(r));
-    let allEmotes = merge(bttvGlobalEmotes, bttvUserEmotes);
-    return allEmotes;
-  }
 
   getBttvUserEmotes(userId: string): Observable<Emote[]> {
     return this.http.get<{ channelEmotes: BttvEmote[], sharedEmotes: BttvEmote[] }>(`https://api.betterttv.net/3/cached/users/twitch/${userId}`).pipe(map(response =>
