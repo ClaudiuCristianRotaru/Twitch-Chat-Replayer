@@ -35,6 +35,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
   userData!: UserData;
   channel: string = "velcuz";
   date: string = "2024/1/1";
+  draggingSlider: boolean = false;
   isAudioEnabled: boolean = false;
   constructor(
     private emoteSetService: EmoteSetService,
@@ -86,7 +87,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
         messageData.time.minutes,
         messageData.time.seconds,
         messageData.time.milliseconds);
-      this.sliderValueMinutes = messageTime.hours * 60 + messageTime.minutes;
+      if (!this.draggingSlider) //don't sync time if dragging slider
+        this.sliderValueMinutes = messageTime.hours * 60 + messageTime.minutes;
       const message: Message = new Message(
         messageData.date,
         messageTime,
@@ -95,6 +97,10 @@ export class AppComponent implements OnInit, AfterViewChecked {
         messageData.content);
       this.addMessage(message);
     }
+  }
+
+  onDragStart() {
+    this.draggingSlider = true;
   }
 
   messageWorker(messages: any, time: any): void {
@@ -106,6 +112,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
     t = Time.convertMsToTime(this.sliderValueMinutes * 60 * 1000);
     this.addMessage(new Message("", new Time(), "", "SERVER", `Showing messages from: ${t.toShortString()}`));
     this.timerWorker.postMessage({ time: t });
+    this.draggingSlider = false;
   }
 
   formatSliderTimeLabel(value: number): string {
@@ -127,6 +134,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
   }
 
   getNewChannelData() {
+    if (this.channel == this.userData.name) return;
     this.messages = [];
     this.getChannelData();
   }

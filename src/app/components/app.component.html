@@ -22,7 +22,7 @@
     </form>
 
     <mat-slider class="time-slider" max="1439" step="1" discrete [displayWith]="formatSliderTimeLabel">
-      <input matSliderThumb (dragEnd)="updateCurrentTime()" (keyup)="updateCurrentTime()"
+      <input matSliderThumb (dragStart)="onDragStart()" (dragEnd)="updateCurrentTime()" (keyup)="updateCurrentTime()"
         [(ngModel)]="sliderValueMinutes">
     </mat-slider>
 
